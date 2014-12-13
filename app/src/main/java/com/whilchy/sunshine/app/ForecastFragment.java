@@ -1,5 +1,6 @@
 package com.whilchy.sunshine.app;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -58,52 +59,78 @@ public class ForecastFragment extends Fragment {
         ListView forecastListView = (ListView) rootView.findViewById(R.id.listview_forecast);
         forecastListView.setAdapter(forecastAdapter);
 
-        // Connects to OpenWeatherMaps API to retrieve the data
-        HttpURLConnection urlConnection = null;
-        BufferedReader reader = null;
 
-        // Will contains the JSON response as String
-        String forecastJsonString = null;
-
-        try {
-            // URL for the OpenWeatherMap query
-            // More info at http://openweathermap.org/API
-            URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=Oliveira+de+Azemeis&mode=json&units=metric&cnt=7");
-
-            // Creates the GET request to OpenWeatherMap
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("GET");
-            urlConnection.connect();
-
-            // Read the input stream into a stream
-            InputStream inputStream = urlConnection.getInputStream();
-            StringBuffer buffer = new StringBuffer();
-            if(buffer == null) {
-                return null;    // No buffer
-            }
-
-            reader = new BufferedReader(new InputStreamReader(inputStream));
-
-            String line;
-            while ((line = reader.readLine()) != null) {
-                buffer.append(line + "\n");
-            }
-
-            if(buffer.length() == 0) {
-                return null;    // Stream empty
-            }
-            forecastJsonString = buffer.toString();
-
-        } catch (MalformedURLException e) {
-            Log.e(String.format("Malformed URL: [%s]", e.getMessage()), "Error", e);
-            // If we cannot wasn't successfull there's no point in attempting parse it
-            return null;
-        } catch (IOException e) {
-            Log.e(String.format("Connection Error: [%s]", e.getMessage()), "Error", e);
-            // If we cannot wasn't successfull there's no point in attempting parse it
-            return null;
-        }
 
         return rootView;
+    }
+
+    /**
+     * Perfoms the AsyncTask off the Main Thread on a Background Thread
+     */
+    public class FetchWeatherTask extends AsyncTask<Void, Void, Void> {
+
+        private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            // Connects to OpenWeatherMaps API to retrieve the data
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+
+            // Will contains the JSON response as String
+            String forecastJsonString = null;
+
+            try {
+                // URL for the OpenWeatherMap query
+                // More info at http://openweathermap.org/API
+                URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=Oliveira+de+Azemeis&mode=json&units=metric&cnt=7");
+
+                // Creates the GET request to OpenWeatherMap
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                // Read the input stream into a stream
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuffer buffer = new StringBuffer();
+                if(buffer == null) {
+                    return null;    // No buffer
+                }
+
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line + "\n");
+                }
+
+                if(buffer.length() == 0) {
+                    return null;    // Stream empty
+                }
+                forecastJsonString = buffer.toString();
+
+            } catch (MalformedURLException e) {
+                Log.e(LOG_TAG, String.format("Malformed URL: [%s]", e.getMessage()), e);
+                // If we cannot wasn't successfull there's no point in attempting parse it
+                return null;
+            } catch (IOException e) {
+                Log.e(LOG_TAG, String.format("Connection Error: [%s]", e.getMessage()), e);
+                // If we cannot wasn't successfull there's no point in attempting parse it
+                return null;
+            }
+            finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (final IOException e) {
+                        Log.e(LOG_TAG, String.format("Error closing stream: [%s]", e.getMessage()) , e);
+                    }
+                }
+            }
+            return null;
+        }
     }
 }
