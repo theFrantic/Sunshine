@@ -3,6 +3,7 @@ package com.whilchy.sunshine.app;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,6 +12,15 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import org.apache.http.HttpConnection;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -86,6 +96,52 @@ public class MainActivity extends ActionBarActivity {
 
             ListView forecastListView = (ListView) rootView.findViewById(R.id.listview_forecast);
             forecastListView.setAdapter(forecastAdapter);
+
+            // Connects to OpenWeatherMaps API to retrieve the data
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+
+            // Will contains the JSON response as String
+            String forecastJsonString = null;
+
+            try {
+                // URL for the OpenWeatherMap query
+                // More info at http://openweathermap.org/API
+                URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?q=Oliveira+de+Azemeis&mode=json&units=metric&cnt=7");
+
+                // Creates the GET request to OpenWeatherMap
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                // Read the input stream into a stream
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuffer buffer = new StringBuffer();
+                if(buffer == null) {
+                    return null;    // No buffer
+                }
+
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    buffer.append(line + "\n");
+                }
+
+                if(buffer.length() == 0) {
+                    return null;    // Stream empty
+                }
+                forecastJsonString = buffer.toString();
+
+            } catch (MalformedURLException e) {
+                Log.e(String.format("Malformed URL: [%s]", e.getMessage()), "Error", e);
+                // If we cannot wasn't successfull there's no point in attempting parse it
+                return null;
+            } catch (IOException e) {
+                Log.e(String.format("Connection Error: [%s]", e.getMessage()), "Error", e);
+                // If we cannot wasn't successfull there's no point in attempting parse it
+                return null;
+            }
 
             return rootView;
         }
