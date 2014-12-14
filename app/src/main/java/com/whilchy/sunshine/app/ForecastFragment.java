@@ -204,9 +204,6 @@ public class ForecastFragment extends Fragment {
                 resultStrs[i] = day + " - " + description + " - " + highAndLow;
             }
 
-            for (String s : resultStrs) {
-                Log.v(LOG_TAG, "Forecast entry: " + s);
-            }
             return resultStrs;
 
         }
@@ -247,8 +244,6 @@ public class ForecastFragment extends Fragment {
 
                 URL url = new URL(builtUri.toString());
 
-                Log.v(LOG_TAG, String.format("Built Uri: %s", builtUri.toString()));
-
                 // Creates the GET request to OpenWeatherMap
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
@@ -272,8 +267,6 @@ public class ForecastFragment extends Fragment {
                     return null;    // Stream empty
                 }
                 forecastJsonString = buffer.toString();
-
-                Log.v(LOG_TAG, String.format("Forecast JSON String: %s", forecastJsonString));
 
             } catch (MalformedURLException e) {
                 Log.e(LOG_TAG, String.format("Malformed URL: [%s]", e.getMessage()), e);
