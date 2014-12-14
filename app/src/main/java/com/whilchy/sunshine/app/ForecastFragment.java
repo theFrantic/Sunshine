@@ -138,6 +138,8 @@ public class ForecastFragment extends Fragment {
                 }
                 forecastJsonString = buffer.toString();
 
+                Log.v(LOG_TAG, String.format("Forecast JSON String: %s", forecastJsonString));
+
             } catch (MalformedURLException e) {
                 Log.e(LOG_TAG, String.format("Malformed URL: [%s]", e.getMessage()), e);
                 // If we cannot wasn't successfull there's no point in attempting parse it
