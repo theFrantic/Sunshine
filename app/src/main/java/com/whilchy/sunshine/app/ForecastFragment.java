@@ -1,5 +1,6 @@
 package com.whilchy.sunshine.app;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -105,7 +106,9 @@ public class ForecastFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String forecastSelected = mForecastAdapter.getItem(position).toString();
-                Toast.makeText(getActivity(), forecastSelected, Toast.LENGTH_SHORT).show();
+                Intent startDetailsActivityIntent = new Intent(view.getContext(), ForecastFragment.class);
+                startDetailsActivityIntent.putExtra(Intent.EXTRA_TEXT, forecastSelected);
+                startActivity(startDetailsActivityIntent);
             }
         });
 
