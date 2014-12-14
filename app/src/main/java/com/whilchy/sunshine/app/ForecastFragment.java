@@ -254,8 +254,10 @@ public class ForecastFragment extends Fragment {
                 final String UNITS_PARAM = "units";
                 final String DAYS_PARAM = "cnt";
 
+                String queryParam = params[0].trim().replace(" ", "+");     // URL friendly
+
                 Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
-                        .appendQueryParameter(QUERY_PARAM, params[0])
+                        .appendQueryParameter(QUERY_PARAM, queryParam)
                         .appendQueryParameter(FORMAT_PARAM, format)
                         .appendQueryParameter(UNITS_PARAM, units)
                         .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
