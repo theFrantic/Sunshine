@@ -37,6 +37,8 @@ import java.util.List;
  */
 public class ForecastFragment extends Fragment {
 
+    private ArrayAdapter<String> mForecastAdapter;
+
     public ForecastFragment() {
     }
 
@@ -84,17 +86,17 @@ public class ForecastFragment extends Fragment {
 
         // Now we create the Array Adapter and pass it the dummy data we've just created
         // we will use it to populate the ListView
-        ArrayAdapter<String> forecastAdapter = new ArrayAdapter<String>(
-                getActivity(),
-                R.layout.list_item_forecast,
-                R.id.list_item_forecast_textview,
-                weekForecast
-        );
+        mForecastAdapter =
+                new ArrayAdapter<String>(
+                    getActivity(),
+                    R.layout.list_item_forecast,
+                    R.id.list_item_forecast_textview,
+                    weekForecast);
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         ListView forecastListView = (ListView) rootView.findViewById(R.id.listview_forecast);
-        forecastListView.setAdapter(forecastAdapter);
+        forecastListView.setAdapter(mForecastAdapter);
 
 
 
@@ -209,7 +211,6 @@ public class ForecastFragment extends Fragment {
 
         }
 
-
         @Override
         protected String[] doInBackground(String... params) {
             // if theres no zip code returns
@@ -304,6 +305,17 @@ public class ForecastFragment extends Fragment {
 
             // This will only happen if raised some error on the parsing
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(String[] result) {
+            if (result != null) {
+                mForecastAdapter.clear();
+                for(String dayForecastStr : result) {
+                    mForecastAdapter.add(dayForecastStr);
+                }
+                // New data is back from the server.  Hooray!
+            }
         }
     }
 }
