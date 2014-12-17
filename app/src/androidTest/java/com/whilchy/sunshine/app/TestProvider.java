@@ -15,19 +15,14 @@
   */
 package com.whilchy.sunshine.app;
 
-import android.annotation.TargetApi;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
-import android.os.Build;
 import android.test.AndroidTestCase;
 import android.util.Log;
 
-import com.whilchy.sunshine.app.TestDb;
-import com.whilchy.sunshine.app.data.WeatherContract.WeatherEntry;
 import com.whilchy.sunshine.app.data.WeatherContract.LocationEntry;
+import com.whilchy.sunshine.app.data.WeatherContract.WeatherEntry;
 import com.whilchy.sunshine.app.data.WeatherDbHelper;
 
 public class TestProvider extends AndroidTestCase {
@@ -38,7 +33,7 @@ public class TestProvider extends AndroidTestCase {
         mContext.deleteDatabase(WeatherDbHelper.DATABASE_NAME);
     }
 
-    public void testInsertReadDb() {
+    public void testInsertReadProvider() {
 
         // If there's an error in those massive SQL table creation Strings,
         // errors will be thrown here when you try to get a writable database.
@@ -77,14 +72,12 @@ public class TestProvider extends AndroidTestCase {
         assertTrue(weatherRowId != -1);
 
         // A cursor is your primary interface to the query results.
-        Cursor weatherCursor = db.query(
-                WeatherEntry.TABLE_NAME,  // Table to Query
+        Cursor weatherCursor = mContext.getContentResolver().query(
+                WeatherEntry.CONTENT_URI,  // Table to Query
                 null, // leaving "columns" null just returns all the columns.
                 null, // cols for "where" clause
                 null, // values for "where" clause
-                null, // columns to group by
-                null, // columns to filter by row groups
-                null  // sort order
+                null // columns to group by
         );
 
         TestDb.validateCursor(weatherCursor, weatherValues);
