@@ -4,7 +4,7 @@
     <EditTextPreference
         android:title="@string/pref_title_location"
         android:key="@string/pref_location_key"
-        android:defaultValue="@string/pref_default_location"
+        android:defaultValue="@string/pref_location_default"
         android:inputType="textCapWords"
         android:capitalize="words"
         android:singleLine="true"
